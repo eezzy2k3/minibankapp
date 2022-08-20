@@ -1,2 +1,8 @@
 # minibankapp
-a mini bank app that can take cash deposit and do transfer
+
+> A simple fictitious banking application API
+
+## Features
+- Cash deposit
+- Transfer
+- you can view transaction history
