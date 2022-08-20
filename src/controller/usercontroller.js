@@ -81,7 +81,7 @@ const cashDeposit = async(req,res)=>{
         
         findaccount.balance = Number(amount) + findaccount.balance
 
-        findaccount.transactionHistory.push(`you have been credited with ${amount}`)
+        findaccount.transactionHistory.push(`you have been credited with ${amount} at ${Date()}`)
        
         await findaccount.save()
        
@@ -119,15 +119,15 @@ const transfer = async(req,res)=>{
     
     findaccountCredit.balance = findaccountCredit.balance + Number(amount)
 
-    findaccountDebit.transactionHistory.push(`you have been debited with ${amount}`)
+    findaccountDebit.transactionHistory.push(`you have been debited with ${amount} at ${Date()}`)
     
-    findaccountCredit.transactionHistory.push(`you have been credited with ${amount}`)
+    findaccountCredit.transactionHistory.push(`you have been credited with ${amount} at ${Date()}`)
    
     await findaccountDebit.save()
    
     await findaccountCredit.save()
    
-    res.status(200).json({success:true,msg:`your account have been debited with ${amount}`,balance:findaccountDebit.balance})
+    res.status(200).json({success:true,msg:`your account have been debited with ${amount} at ${Date()}`,balance:findaccountDebit.balance})
 
 
 
