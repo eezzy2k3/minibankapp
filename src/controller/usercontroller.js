@@ -1,6 +1,7 @@
 const bcrypt = require("bcrypt")
 const jwt = require("jsonwebtoken")
 const User = require("../models/usermodel")
+const sendMail = require("../utils/sendmail")
 
 // desc => create a new account
 // route =>POST/api/createaccount
@@ -43,16 +44,32 @@ const login = async(req,res)=>{
        
         const accountNumber = req.body.accountNumber
        
-        const findaccount = await User.findOne({accountNumber})
+        let user = await User.findOne({accountNumber})
        
-        if(!findaccount) return res.status(404).json({success:false,msg:"account does not exist"})
+        if(!user) return res.status(404).json({success:false,msg:"account does not exist"})
        
-        const validaccount = await bcrypt.compare(password,findaccount.password)
+        const validaccount = await bcrypt.compare(password,user.password)
        
         if(!validaccount) return res.status(404).json({success:false,msg:"invalid credentials"})
        
-        const token = jwt.sign({accountNumber:findaccount.accountNumber,email:findaccount.email,_id:findaccount._id},process.env.SECRET,{expiresIn:"1d"})
+        const token = jwt.sign({accountNumber:user.accountNumber,email:user.email,_id:user._id},process.env.SECRET,{expiresIn:"1d"})
        
+
+        // send email alert for log in
+        try{
+            await sendMail({
+                email:user.email,
+                subject:"login alert",
+                message:`you successfully logged into your account at ${Date()}`
+            })
+        }catch(error){
+            console.log(error)
+            return res.status(500).json({
+                success:false,
+                msg:error.message
+            })
+            
+        }
         res.status(200).json({
             success:true,
             msg:"successfully logged in",
@@ -84,6 +101,22 @@ const cashDeposit = async(req,res)=>{
         findaccount.transactionHistory.push(`you have been credited with ${amount} at ${Date()}`)
        
         await findaccount.save()
+
+        // send credit alert
+        try{
+            await sendMail({
+                email:findaccount.email,
+                subject:"credit alert",
+                message:`you have been credited with ${amount} at ${Date()}`
+            })
+        }catch(error){
+            console.log(error)
+            return res.status(500).json({
+                success:false,
+                msg:error.message
+            })
+            
+        }
        
         res.status(200).json({success:true,msg:`your account ${accountNumber} was credited with ${amount}`,balance:findaccount.balance})
    
@@ -126,6 +159,39 @@ const transfer = async(req,res)=>{
     await findaccountDebit.save()
    
     await findaccountCredit.save()
+
+     // send credit alert
+     try{
+        await sendMail({
+            email:findaccountCredit.email,
+            subject:"credit alert",
+            message:`you have been credited with ${amount} at ${Date()}`
+        })
+    }catch(error){
+        console.log(error)
+        return res.status(500).json({
+            success:false,
+            msg:error.message
+        })
+        
+    }
+
+    // send debit alert
+    try{
+        await sendMail({
+            email:findaccountDebit.email,
+            subject:"debit alert",
+            message:`you have been debited with ${amount} at ${Date()}`
+        })
+    }catch(error){
+        console.log(error)
+        return res.status(500).json({
+            success:false,
+            msg:error.message
+        })
+        
+    }
+
    
     res.status(200).json({success:true,msg:`your account have been debited with ${amount} at ${Date()}`,balance:findaccountDebit.balance})
 
