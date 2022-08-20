@@ -24,6 +24,9 @@ const userschema = new mongoose.Schema({
      balance:{
          type:Number,
          default:0
+     },
+     transactionHistory:{
+         type:Array
      }
 },{timestamps:true})
 
