@@ -3,6 +3,8 @@
 > A simple fictitious banking application API
 
 ## Features
+- Create an account
+- Authorization for all transactions with a PIN
 - Cash deposit
 - Transfer
 - you can view transaction history
