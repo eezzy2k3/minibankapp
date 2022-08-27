@@ -98,7 +98,7 @@ const cashDeposit = async(req,res)=>{
         
         findaccount.balance = Number(amount) + findaccount.balance
 
-        findaccount.transactionHistory.push(`you have been credited with ${amount} at ${Date()}`)
+        findaccount.transactionHistory.push(`your acct has been credited with ${amount} at ${Date()}`)
        
         await findaccount.save()
 
@@ -107,7 +107,7 @@ const cashDeposit = async(req,res)=>{
             await sendMail({
                 email:findaccount.email,
                 subject:"credit alert",
-                message:`you have been credited with ${amount} at ${Date()}`
+                message:`your account has been credited with ${amount} at ${Date()}`
             })
         }catch(error){
             console.log(error)
@@ -152,9 +152,9 @@ const transfer = async(req,res)=>{
     
     findaccountCredit.balance = findaccountCredit.balance + Number(amount)
 
-    findaccountDebit.transactionHistory.push(`you have been debited with ${amount} at ${Date()}`)
+    findaccountDebit.transactionHistory.push(`your account has been debited with ${amount} at ${Date()}`)
     
-    findaccountCredit.transactionHistory.push(`you have been credited with ${amount} at ${Date()}`)
+    findaccountCredit.transactionHistory.push(`your account has been credited with ${amount} at ${Date()}`)
    
     await findaccountDebit.save()
    
