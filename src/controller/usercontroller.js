@@ -27,7 +27,7 @@ const createaccount = async(req,res)=>{
       
         await newUser.save()
       
-        res.status(200).json({success:true,msg:"you have successfully created an account",data:newUser})
+        res.status(201).json({success:true,msg:"you have successfully created an account",data:newUser})
     }catch(error){
         res.status(404).json({success:false,msg:error.message})
         console.log(error)
@@ -50,7 +50,7 @@ const login = async(req,res)=>{
        
         const validaccount = await bcrypt.compare(password,user.password)
        
-        if(!validaccount) return res.status(404).json({success:false,msg:"invalid credentials"})
+        if(!validaccount) return res.status(400).json({success:false,msg:"invalid credentials"})
        
         const token = jwt.sign({accountNumber:user.accountNumber,email:user.email,_id:user._id},process.env.SECRET,{expiresIn:"1d"})
        
@@ -77,7 +77,7 @@ const login = async(req,res)=>{
         })
     }catch(error){
         console.log(error)
-        return res.status(404).json({
+        return res.status(401).json({
             success:false,
             msg:error.message
         })
@@ -245,7 +245,7 @@ const transactionHistory = async(req,res)=>{
         res.status(200).json({success:true,data:data})
    
     }catch(error){
-        res.status(404).json({success:false,msg:error.message})
+        res.status(400).json({success:false,msg:error.message})
     }
 }
 
